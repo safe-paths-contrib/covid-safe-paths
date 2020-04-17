@@ -8,24 +8,17 @@ import PushNotification from 'react-native-push-notification';
 
 import { isPlatformiOS } from './../Util';
 import {
-  LOCATION_DATA,
-  CROSSED_PATHS,
-  AUTHORITY_SOURCE_SETTINGS,
   AUTHORITY_NEWS,
+  AUTHORITY_SOURCE_SETTINGS,
+  CROSSED_PATHS,
   LAST_CHECKED,
 } from '../constants/storage';
 import { GetStoreData, SetStoreData } from '../helpers/General';
 import languages from '../locales/languages';
+import { LocationData } from '../services/LocationService';
 
 export async function IntersectSet(concernLocationArray, completion) {
-  GetStoreData(LOCATION_DATA).then(locationArrayString => {
-    let locationArray;
-    if (locationArrayString !== null) {
-      locationArray = JSON.parse(locationArrayString);
-    } else {
-      locationArray = [];
-    }
-
+  new LocationData().getLocationData().then(locationArray => {
     let dayBin = [
       0,
       0,

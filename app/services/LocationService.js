@@ -2,9 +2,8 @@ import BackgroundGeolocation from '@mauron85/react-native-background-geolocation
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 
-import { LOCATION_DATA, PARTICIPATE } from '../constants/storage';
+import { GOOGLE_LOCATION_DATA, PARTICIPATE } from '../constants/storage';
 import { GetStoreData, SetStoreData } from '../helpers/General';
-import { isLocationsNearby as areLocationsNearby } from '../helpers/Intersect';
 import languages from '../locales/languages';
 import { isPlatformAndroid } from '../Util';
 
@@ -21,17 +20,41 @@ export class LocationData {
 
     // Maximum time that we will backfill for missing data
     this.maxBackfillTime = 60000 * 60 * 24; // Time (in milliseconds).  60000 * 60 * 8 = 24 hours
+
+    // Maximum amount of days to keep in storage
+    this.maxDaysToKeep = 28;
+
+    // 288 five minute intervals in a day
+    this.maxRecordsToKeep = 288 * this.maxDaysToKeep;
+
+    // Minimum timestamp that should be pulled in for export
+    this.mimimumUTCLocationTimestamp =
+      new Date().getTime() - 60 * 60 * 24 * 1000 * this.maxDaysToKeep;
   }
 
-  getLocationData() {
-    return GetStoreData(LOCATION_DATA).then(locationArrayString => {
-      let locationArray = [];
-      if (locationArrayString !== null) {
-        locationArray = JSON.parse(locationArrayString);
-      }
-
-      return locationArray;
+  async getLocationData() {
+    // Grab all locations from sqlite database
+    const locations = await new Promise((resolve, reject) => {
+      BackgroundGeolocation.getLocations(resolve, reject);
     });
+
+    // Keep only lat/lng,time and filter by minimum timestamp
+    const filteredLocations = locations
+      .map(location => ({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        time: location.time,
+      }))
+      .filter(location => location.time > this.mimimumUTCLocationTimestamp);
+
+    // Grab imported Google Locations
+    // TODO: Need to occasionally clean Google to only keep 28 days of data
+    const googleLocationJson = await GetStoreData(GOOGLE_LOCATION_DATA);
+    const googleLocations =
+      googleLocationJson !== null ? JSON.parse(googleLocationJson) : [];
+
+    // Return merged set of all stored locations
+    return filteredLocations.concat(googleLocations);
   }
 
   async getPointStats() {
@@ -81,6 +104,7 @@ export default class LocationServices {
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
       stationaryRadius: 5,
       distanceFilter: 5,
+      maxLocations: locationData.maxRecordsToKeep,
       notificationTitle: languages.t('label.location_enabled_title'),
       notificationText: languages.t('label.location_enabled_message'),
       debug: false, // when true, it beeps every time a loc is read
