@@ -1,15 +1,15 @@
-import { LOCATION_DATA } from '../constants/storage';
+import { GOOGLE_LOCATION_DATA } from '../constants/storage';
 /**
  * Import a Google JSon into the Database.
  */
 import { GetStoreData, SetStoreData } from '../helpers/General';
 
 function BuildLocalFormat(placeVisit) {
-  return (loc = {
+  return {
     latitude: placeVisit.location.latitudeE7 * 10 ** -7,
     longitude: placeVisit.location.longitudeE7 * 10 ** -7,
     time: placeVisit.duration.startTimestampMs,
-  });
+  };
 }
 
 function LocationExists(localDataJSON, loc) {
@@ -53,7 +53,7 @@ function Merge(localDataJSON, googleDataJSON) {
 }
 
 export async function MergeJSONWithLocalData(googleDataJSON) {
-  GetStoreData(LOCATION_DATA).then(locationArray => {
+  GetStoreData(GOOGLE_LOCATION_DATA).then(locationArray => {
     let locationData;
 
     if (locationArray !== null) {
@@ -65,6 +65,6 @@ export async function MergeJSONWithLocalData(googleDataJSON) {
     Merge(locationData, googleDataJSON);
 
     console.log('Saving on array');
-    SetStoreData(LOCATION_DATA, locationData);
+    SetStoreData(GOOGLE_LOCATION_DATA, locationData);
   });
 }
