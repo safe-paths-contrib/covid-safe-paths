@@ -53,86 +53,6 @@ export class LocationData {
       pointCount,
     };
   }
-
-  saveLocation(location) {
-    // Persist this location data in our local storage of time/lat/lon values
-    this.getLocationData().then(locationArray => {
-      // Always work in UTC, not the local time in the locationData
-      let unixtimeUTC = Math.floor(location['time']);
-      let unixtimeUTC_28daysAgo = unixtimeUTC - 60 * 60 * 24 * 1000 * 28;
-
-      // Verify that at least the minimum amount of time between saves has passed
-      // This ensures that no matter how fast GPS coords are delivered, saving
-      // does not happen any faster than the minLocationSaveInterval
-      if (locationArray.length >= 1) {
-        let lastSaveTime = locationArray[locationArray.length - 1]['time'];
-        if (lastSaveTime + this.minLocationSaveInterval > unixtimeUTC) {
-          //console.log('[INFO] Discarding point (too soon):', unixtimeUTC);
-          return;
-        }
-      }
-
-      // Curate the list of points, only keep the last 28 days
-      let curated = [];
-      for (let i = 0; i < locationArray.length; i++) {
-        if (locationArray[i]['time'] > unixtimeUTC_28daysAgo) {
-          curated.push(locationArray[i]);
-        }
-      }
-
-      // Backfill the stationary points, if available
-      // The assumption is that if we see a gap in the data, and the
-      // device hasn't moved significantly, then we can fill in the missing data
-      // with the current location.  This makes it easier for a health authority
-      // person to have a set of locations over time, and they can manually
-      // redact the time frames that aren't correct.
-      if (curated.length >= 1) {
-        let lastLocationArray = curated[curated.length - 1];
-
-        let areCurrentPreviousNearby = areLocationsNearby(
-          lastLocationArray['latitude'],
-          lastLocationArray['longitude'],
-          location['latitude'],
-          location['longitude'],
-        );
-        //console.log('[INFO] nearby:', nearby);
-
-        // Actually do the backfill if the current point is nearby the previous
-        // point and the time is within the maximum time to backfill.
-        let lastRecordedTime = lastLocationArray['time'];
-        if (
-          areCurrentPreviousNearby &&
-          unixtimeUTC - lastRecordedTime < this.maxBackfillTime
-        ) {
-          for (
-            let newTS = lastRecordedTime + this.locationInterval;
-            newTS < unixtimeUTC - this.locationInterval;
-            newTS += this.locationInterval
-          ) {
-            let lat_lon_time = {
-              latitude: lastLocationArray['latitude'],
-              longitude: lastLocationArray['longitude'],
-              time: newTS,
-            };
-            //console.log('[INFO] backfill location:', lat_lon_time);
-            curated.push(lat_lon_time);
-          }
-        }
-      }
-
-      // Save the location using the current lat-lon and the
-      // recorded GPS timestamp
-      let lat_lon_time = {
-        latitude: location['latitude'],
-        longitude: location['longitude'],
-        time: unixtimeUTC,
-      };
-      curated.push(lat_lon_time);
-      console.log('[INFO] saved location:', lat_lon_time);
-
-      SetStoreData(LOCATION_DATA, curated);
-    });
-  }
 }
 
 export default class LocationServices {
@@ -178,7 +98,7 @@ export default class LocationServices {
       stopOnStillActivity: false,
     });
 
-    BackgroundGeolocation.on('location', location => {
+    BackgroundGeolocation.on('location', () => {
       // handle your locations here
       /* SAMPLE OF LOCATION DATA OBJECT
                 {
@@ -194,7 +114,7 @@ export default class LocationServices {
         // execute long running task
         // eg. ajax post location
         // IMPORTANT: task has to be ended by endTask
-        locationData.saveLocation(location);
+        // TODO: is this needed?
         BackgroundGeolocation.endTask(taskKey);
       });
     });
