@@ -4,12 +4,14 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.swmansion.reanimated.ReanimatedPackage;
+import com.marianhello.bgloc.BackgroundGeolocationFacade;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import io.realm.Realm;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import org.pathcheck.covidsafepaths.storage.RealmWrapper;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -43,8 +45,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onTerminate() {
       super.onTerminate();
-
-      // ADD LOCAL NOTIFICATION
+      RealmWrapper.INSTANCE.close();
   }
 
   @Override
@@ -52,6 +53,8 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
+    Realm.init(this);
+    initializeGeolocationTransformer();
   }
 
   /**
@@ -78,5 +81,16 @@ public class MainApplication extends Application implements ReactApplication {
         e.printStackTrace();
       }
     }
+  }
+
+  private void initializeGeolocationTransformer() {
+    BackgroundGeolocationFacade.setLocationTransform((context, location) -> {
+
+      // Save Location in encrypted realm db
+      RealmWrapper.INSTANCE.saveLocation(location);
+
+      // Always return null. We never want to store data in the libraries SQLite DB
+      return null;
+    });
   }
 }
