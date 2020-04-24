@@ -11,6 +11,7 @@ import com.facebook.soloader.SoLoader;
 import io.realm.Realm;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import org.pathcheck.covidsafepaths.bridge.RealmPackage;
 import org.pathcheck.covidsafepaths.storage.RealmWrapper;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -28,6 +29,8 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
+          packages.add(new RealmPackage());
+
           return packages;
         }
 

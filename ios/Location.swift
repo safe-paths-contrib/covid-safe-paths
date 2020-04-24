@@ -23,7 +23,8 @@ class Location: Object {
   
   static func fromBackgroundLocation(backgroundLocation: MAURLocation) -> Location {
     let location = Location()
-    location.time = backgroundLocation.time
+    // Getting empty time on some callbacks. We should be able to use our own date here, as the calls should come in almost immediately
+    location.time = Date.init()
     location.latitude = backgroundLocation.latitude.doubleValue
     location.longitude = backgroundLocation.longitude.doubleValue
     location.altitude.value = backgroundLocation.altitude.doubleValue

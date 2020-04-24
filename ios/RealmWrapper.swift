@@ -13,14 +13,15 @@ class RealmWrapper: NSObject {
 
   @objc static let shared = RealmWrapper()
 
-  let realm: Realm
+  let realmConfig: Realm.Configuration
   
   private override init() {
-    let config = Realm.Configuration(objectTypes: [Location.self])
-    realm = try! Realm(configuration: config)
+    realmConfig = Realm.Configuration(objectTypes: [Location.self])
+    
   }
   
   @objc func insertLocation(backgroundLocation: MAURLocation) {
+    let realm = try! Realm(configuration: realmConfig)
     let location = Location.fromBackgroundLocation(backgroundLocation: backgroundLocation)
     try! realm.write {
       realm.add(location)
