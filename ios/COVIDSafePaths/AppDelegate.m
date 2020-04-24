@@ -12,13 +12,25 @@
 #import <React/RCTRootView.h>
 #import <RNCPushNotificationIOS.h>
 #import <UserNotifications/UserNotifications.h>
-#import <react-native-splash-screen/RNSplashScreen.h>
+#import <RNSplashScreen.h>
 #import <TSBackgroundFetch/TSBackgroundFetch.h>
+#import <MAURLocation.h>
+#import <MAURBackgroundGeolocationFacade.h>
+#import "COVIDSafePaths-Swift.h"
+
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  MAURBackgroundGeolocationFacade.locationTransform = ^(MAURLocation * location) {
+    [[RealmWrapper shared] insertLocationWithBackgroundLocation:location];
+    return location;
+    
+    // You could return null to reject the location,
+    // or if you did something else with the location and the library should not post or save it.
+  };
+  
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"COVIDSafePaths"
