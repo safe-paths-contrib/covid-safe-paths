@@ -46,18 +46,13 @@ public class MainApplication extends Application implements ReactApplication {
   }
 
   @Override
-  public void onTerminate() {
-      super.onTerminate();
-      RealmWrapper.INSTANCE.close();
-  }
-
-  @Override
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
     Realm.init(this);
     initializeGeolocationTransformer();
+    RealmWrapper.INSTANCE.trimLocations();
   }
 
   /**
@@ -90,7 +85,7 @@ public class MainApplication extends Application implements ReactApplication {
     BackgroundGeolocationFacade.setLocationTransform((context, location) -> {
 
       // Save Location in encrypted realm db
-      RealmWrapper.INSTANCE.saveLocation(location);
+      RealmWrapper.INSTANCE.saveDeviceLocation(location);
 
       // Always return null. We never want to store data in the libraries SQLite DB
       return null;
