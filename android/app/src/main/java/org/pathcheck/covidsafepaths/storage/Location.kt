@@ -21,7 +21,7 @@ open class Location(
   var bearing: Float? = null,
   var provider: String? = null,
   var mockFlags: Int? = null,
-  var source: Int
+  var source: Int = -1
 ) : RealmObject() {
 
   fun toWritableMap() : WritableMap {
