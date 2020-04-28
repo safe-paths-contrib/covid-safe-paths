@@ -5,14 +5,14 @@ import com.marianhello.bgloc.data.BackgroundLocation
 import io.realm.RealmObject
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import io.realm.annotations.Index
+import io.realm.annotations.PrimaryKey
 import java.lang.Exception
 
 /*
   Realm requires a no-op constructor. Need to use var and fill will default value
  */
 open class Location(
-  @Index var time: Long = 0,
+  @PrimaryKey var time: Long = 0,
   var latitude: Double = 0.0,
   var longitude: Double = 0.0,
   var altitude: Double? = null,
@@ -58,11 +58,18 @@ open class Location(
     fun fromGoogleLocation(map: ReadableMap?): Location? {
       return try {
         if (map == null) return null
+        val time = map.getString(KEY_TIME)?.toLong()
+        val latitude = map.getDouble(KEY_LATITUDE)
+        val longitude = map.getDouble(KEY_LONGITUDE)
+
+        if (time == null || latitude == 0.0 || longitude == 0.0) {
+          return null
+        }
 
         return Location(
-            time = map.getDouble(KEY_TIME).toLong(),
-            latitude = map.getDouble(KEY_LATITUDE),
-            longitude = map.getDouble(KEY_LONGITUDE),
+            time = time,
+            latitude = latitude,
+            longitude = longitude,
             source = SOURCE_GOOGLE
         )
       } catch (exception: Exception) {

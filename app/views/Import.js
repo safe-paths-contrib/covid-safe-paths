@@ -42,12 +42,8 @@ const ImportScreen = props => {
 
       const filePath = await pickFile();
       if (filePath) {
-        const newLocations = await importTakeoutData(filePath);
-        if (newLocations.length) {
-          setImportResults(makeImportResults('label.import_success'));
-        } else {
-          setImportResults(makeImportResults('label.import_already_imported'));
-        }
+        await importTakeoutData(filePath);
+        setImportResults(makeImportResults('label.import_success'));
       }
     } catch (err) {
       if (err instanceof NoRecentLocationsError) {

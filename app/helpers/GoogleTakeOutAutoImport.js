@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
-import { Platform } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 /**
  * Checks the download folder, unzips and imports all data from Google TakeOut
  */
 import { subscribe, unzip } from 'react-native-zip-archive';
 
-import { mergeJSONWithLocalData } from '../helpers/GoogleData';
+import { extractLocations } from '../helpers/GoogleData';
 
 export class NoRecentLocationsError extends Error {}
 export class InvalidFileExtensionError extends Error {}
@@ -77,7 +77,6 @@ export async function importTakeoutData(filePath) {
 
   console.log('[INFO] Takeout import start. Path:', unifiedPath);
 
-  let newLocations = [];
   let path;
   let parsedFilesCount = 0;
   try {
@@ -118,10 +117,8 @@ export async function importTakeoutData(filePath) {
           },
         );
 
-        newLocations = [
-          ...newLocations,
-          ...(await mergeJSONWithLocalData(JSON.parse(contents))),
-        ];
+        let googleLocations = extractLocations(JSON.parse(contents));
+        await NativeModules.RealmManager.importGoogleLocations(googleLocations);
 
         console.log('[INFO] Imported file:', filepath);
         parsedFilesCount++;
@@ -138,5 +135,4 @@ export async function importTakeoutData(filePath) {
   if (parsedFilesCount === 0) {
     throw new NoRecentLocationsError();
   }
-  return newLocations;
 }

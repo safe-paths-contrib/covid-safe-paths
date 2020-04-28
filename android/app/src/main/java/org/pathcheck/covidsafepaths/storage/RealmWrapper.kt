@@ -42,7 +42,7 @@ object RealmWrapper {
     }, { realm.close() }, { realm.close() })
   }
 
-  fun importGoogleLocations(locations: ReadableArray) {
+  fun importGoogleLocations(locations: ReadableArray, promise: Promise) {
     val realm = Realm.getDefaultInstance()
 
     val locationsToInsert = mutableListOf<Location>()
@@ -58,8 +58,14 @@ object RealmWrapper {
           // possible react type-safe issues here
         }
       }
-      bgRealm.insert(locationsToInsert)
-    }, { realm.close() }, { realm.close() })
+      bgRealm.insertOrUpdate(locationsToInsert)
+    }, {
+      realm.close()
+      promise.resolve(true)
+    }, {
+      realm.close()
+      promise.resolve(false)
+    })
   }
 
   fun trimLocations() {

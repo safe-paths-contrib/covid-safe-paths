@@ -21,7 +21,6 @@ import {
   AUTHORITY_SOURCE_SETTINGS,
   CROSSED_PATHS,
   LAST_CHECKED,
-  LOCATION_DATA,
 } from '../constants/storage';
 import { DEBUG_MODE } from '../constants/storage';
 import { GetStoreData, SetStoreData } from '../helpers/General';
