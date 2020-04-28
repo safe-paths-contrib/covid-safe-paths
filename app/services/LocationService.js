@@ -219,6 +219,7 @@ export default class LocationServices {
 
     // PushNotificationIOS.requestPermissions();
     BackgroundGeolocation.configure({
+      maxLocations: 0,
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
       stationaryRadius: 5,
       distanceFilter: 5,

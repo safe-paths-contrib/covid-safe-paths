@@ -42,7 +42,7 @@ object RealmWrapper {
     }, { realm.close() }, { realm.close() })
   }
 
-  fun importGoogleLocations(locations: ReadableArray, promise: Promise) {
+  fun importLocations(locations: ReadableArray, source: Int, promise: Promise) {
     val realm = Realm.getDefaultInstance()
 
     val locationsToInsert = mutableListOf<Location>()
@@ -50,10 +50,12 @@ object RealmWrapper {
       for (i in 0 until locations.size()) {
         try {
           val map = locations.getMap(i)
-          Location.fromGoogleLocation(map)
-              ?.let {
-                locationsToInsert.add(it)
-              }
+
+          Location.fromImportLocation(map, source)?.let {
+            if (it.time >= getCutoffTimestamp(daysToKeep)) {
+              locationsToInsert.add(it)
+            }
+          }
         } catch (exception: Exception) {
           // possible react type-safe issues here
         }
@@ -62,9 +64,11 @@ object RealmWrapper {
     }, {
       realm.close()
       promise.resolve(true)
+      Log.d(TAG, "Imported ${locationsToInsert.size} locations")
     }, {
       realm.close()
       promise.resolve(false)
+      Log.d(TAG, "Failed to import ${locationsToInsert.size} locations")
     })
   }
 

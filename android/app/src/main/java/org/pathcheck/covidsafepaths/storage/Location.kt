@@ -1,6 +1,7 @@
 package org.pathcheck.covidsafepaths.storage
 
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.marianhello.bgloc.data.BackgroundLocation
 import io.realm.RealmObject
 import com.facebook.react.bridge.WritableMap
@@ -38,7 +39,8 @@ open class Location(
     const val KEY_LONGITUDE = "longitude"
 
     private const val SOURCE_DEVICE = 0
-    private const val SOURCE_GOOGLE = 1
+    const val SOURCE_MIGRATION = 1
+    const val SOURCE_GOOGLE = 2
 
     fun fromBackgroundLocation(backgroundLocation: BackgroundLocation): Location {
       return Location(
@@ -55,10 +57,17 @@ open class Location(
       )
     }
 
-    fun fromGoogleLocation(map: ReadableMap?): Location? {
+    fun fromImportLocation(
+      map: ReadableMap?,
+      source: Int
+    ): Location? {
       return try {
         if (map == null) return null
-        val time = map.getString(KEY_TIME)?.toLong()
+        val time = when(map.getType(KEY_TIME)){
+          ReadableType.Number -> map.getDouble(KEY_TIME).toLong()
+          ReadableType.String -> map.getString(KEY_TIME)?.toLong()
+          else -> null
+        }
         val latitude = map.getDouble(KEY_LATITUDE)
         val longitude = map.getDouble(KEY_LONGITUDE)
 
@@ -70,7 +79,7 @@ open class Location(
             time = time,
             latitude = latitude,
             longitude = longitude,
-            source = SOURCE_GOOGLE
+            source = source
         )
       } catch (exception: Exception) {
         // possible react type-safe issues here
