@@ -37,8 +37,9 @@ open class Location(
     const val KEY_TIME = "time"
     const val KEY_LATITUDE = "latitude"
     const val KEY_LONGITUDE = "longitude"
+    const val KEY_SOURCE = "source"
 
-    private const val SOURCE_DEVICE = 0
+    const val SOURCE_DEVICE = 0
     const val SOURCE_MIGRATION = 1
     const val SOURCE_GOOGLE = 2
 

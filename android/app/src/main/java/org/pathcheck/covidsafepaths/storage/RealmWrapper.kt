@@ -10,6 +10,8 @@ import io.realm.RealmConfiguration
 import io.realm.Sort.ASCENDING
 import io.realm.Sort.DESCENDING
 import io.realm.kotlin.where
+import org.pathcheck.covidsafepaths.storage.Location.Companion.KEY_SOURCE
+import org.pathcheck.covidsafepaths.storage.Location.Companion.SOURCE_DEVICE
 import org.pathcheck.covidsafepaths.util.getCutoffTimestamp
 import java.lang.Exception
 
@@ -31,7 +33,12 @@ object RealmWrapper {
     val realm = Realm.getDefaultInstance()
 
     realm.executeTransactionAsync({
-      val realmResult = it.where<Location>().sort(Location.KEY_TIME, DESCENDING).limit(1).findAll()
+      val realmResult = it.where<Location>()
+          .equalTo(KEY_SOURCE, SOURCE_DEVICE)
+          .sort(Location.KEY_TIME, DESCENDING)
+          .limit(1)
+          .findAll()
+      
       val previousTime = realmResult.getOrNull(0)?.time ?: 0
       if (backgroundLocation.time - previousTime > minimumTimeInterval) {
         Log.d(TAG, "Inserting New Location")
