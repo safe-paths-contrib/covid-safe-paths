@@ -1,5 +1,6 @@
 import BackgroundGeolocation from '@mauron85/react-native-background-geolocation';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import { NativeModules } from 'react-native';
 import PushNotification from 'react-native-push-notification';
 
 import { LOCATION_DATA, PARTICIPATE } from '../constants/storage';
@@ -23,19 +24,8 @@ export class LocationData {
     this.maxBackfillTime = 60000 * 60 * 24; // Time (in milliseconds).  60000 * 60 * 8 = 24 hours
   }
 
-  getLocationData() {
-    return GetStoreData(LOCATION_DATA).then(locationArrayString => {
-      let locationArray = [];
-      if (locationArrayString !== null) {
-        locationArray = JSON.parse(locationArrayString);
-      }
-
-      return locationArray;
-    });
-  }
-
   async getPointStats() {
-    const locationData = await this.getLocationData();
+    const locationData = await NativeModules.RealmManager.getLocations();
 
     let lastPoint = null;
     let firstPoint = null;
@@ -56,7 +46,7 @@ export class LocationData {
 
   saveLocation(location) {
     // Persist this location data in our local storage of time/lat/lon values
-    this.getLocationData().then(locationArray => {
+    NativeModules.RealmManager.getLocations().then(locationArray => {
       // Always work in UTC, not the local time in the locationData
       let unixtimeUTC = Math.floor(location['time']);
       let unixtimeUTC_28daysAgo = unixtimeUTC - 60 * 60 * 24 * 1000 * 28;

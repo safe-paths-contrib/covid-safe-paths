@@ -6,6 +6,7 @@
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { NativeModules } from 'react-native';
 import PushNotification from 'react-native-push-notification';
 
 import { isPlatformiOS } from './../Util';
@@ -287,8 +288,8 @@ async function asyncCheckIntersect() {
   let dayBins = getEmptyLocationBins();
   let name_news = [];
 
-  // get the saved set of locations for the user, normalize and sort
-  let locationArray = normalizeAndSortLocations(await getSavedLocationArray());
+  // get the saved set of locations for the user, already sorted
+  let locationArray = await NativeModules.RealmManager.getLocations();
 
   // get the health authorities
   let authority_list = await GetStoreData(AUTHORITY_SOURCE_SETTINGS);
@@ -370,17 +371,6 @@ async function retrieveUrlAsJson(url) {
   let response = await fetch(url);
   let responseJson = await response.json();
   return responseJson;
-}
-
-/**
- * Gets the currently saved locations as a location array
- */
-async function getSavedLocationArray() {
-  let locationArrayString = await GetStoreData(LOCATION_DATA);
-  if (locationArrayString !== null) {
-    return JSON.parse(locationArrayString);
-  }
-  return [];
 }
 
 /** Set the app into debug mode */
