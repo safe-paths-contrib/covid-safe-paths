@@ -17,7 +17,7 @@ import java.lang.Exception
 
 object RealmWrapper {
   private const val TAG = "RealmWrapper"
-  private const val minimumTimeInterval = 60000 * 5
+  private const val minimumTimeInterval = 60000 * 4
   private const val daysToKeep = 14
 
   init {
@@ -38,7 +38,7 @@ object RealmWrapper {
           .sort(Location.KEY_TIME, DESCENDING)
           .limit(1)
           .findAll()
-      
+
       val previousTime = realmResult.getOrNull(0)?.time ?: 0
       if (backgroundLocation.time - previousTime > minimumTimeInterval) {
         Log.d(TAG, "Inserting New Location")
