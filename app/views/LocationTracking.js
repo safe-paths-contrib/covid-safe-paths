@@ -202,8 +202,8 @@ class LocationTracking extends Component {
       })
       .catch(error => console.log(error));
 
-    GetStoreData(LOCATION_DATA).then(locations => {
-      if (locations.length > 0) {
+    GetStoreData(LOCATION_DATA, false).then(locations => {
+      if (Array.isArray(locations) && locations.length > 0) {
         NativeModules.RealmManager.migrateExistingLocations(locations).then(
           () => {
             RemoveStoreData(LOCATION_DATA);
