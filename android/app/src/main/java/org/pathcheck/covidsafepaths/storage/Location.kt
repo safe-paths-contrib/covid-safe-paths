@@ -25,7 +25,7 @@ open class Location(
   var source: Int = -1
 ) : RealmObject() {
 
-  fun toWritableMap() : WritableMap {
+  fun toWritableMap(): WritableMap {
     val writableMap = WritableNativeMap()
     writableMap.putDouble(KEY_TIME, time.toDouble())
     writableMap.putDouble(KEY_LATITUDE, latitude)

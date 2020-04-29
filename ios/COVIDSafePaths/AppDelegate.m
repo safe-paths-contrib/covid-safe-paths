@@ -24,7 +24,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   MAURBackgroundGeolocationFacade.locationTransform = ^(MAURLocation * location) {
-    [[RealmWrapper shared] insertLocationWithBackgroundLocation:location];
+    [[RealmWrapper shared] saveDeviceLocationWithBackgroundLocation:location];
     return location;
     
     // You could return null to reject the location,
