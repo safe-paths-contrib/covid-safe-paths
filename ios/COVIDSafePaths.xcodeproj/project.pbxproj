@@ -122,7 +122,7 @@
 		276AB155245238E300D39B58 /* COVIDSafePaths-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "COVIDSafePaths-Bridging-Header.h"; sourceTree = "<group>"; };
 		276AB156245238E400D39B58 /* RealmWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmWrapper.swift; sourceTree = "<group>"; };
 		276AB15B245291DE00D39B58 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
-		27F931562459E28800E1024C /* RealmManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RealmManager.m; path = COVIDSafePaths/RealmManager.m; sourceTree = "<group>"; };
+		27F931562459E28800E1024C /* RealmManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RealmManager.m; sourceTree = "<group>"; };
 		27F931592459E2BD00E1024C /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		2E9077612439A903005C98DE /* SplashScreen.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SplashScreen.xcodeproj; path = "../node_modules/react-native-splash-screen/ios/SplashScreen.xcodeproj"; sourceTree = "<group>"; };
 		3E10CA5A72D06133B886B461 /* libPods-COVIDSafePaths-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-COVIDSafePaths-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -292,6 +292,8 @@
 		13B07FAE1A68108700A75B9A /* COVIDSafePaths */ = {
 			isa = PBXGroup;
 			children = (
+				276F786A245B6C8A00312927 /* bridge */,
+				276F786C245B6CB400312927 /* storage */,
 				0835F8902441054900E95AE3 /* RNBackgroundFetch+AppDelegate.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -302,13 +304,27 @@
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				B2A58212244CE76C000F39A6 /* Localizable.strings */,
-				276AB156245238E400D39B58 /* RealmWrapper.swift */,
 				276AB155245238E300D39B58 /* COVIDSafePaths-Bridging-Header.h */,
-				276AB15B245291DE00D39B58 /* Location.swift */,
+			);
+			name = COVIDSafePaths;
+			sourceTree = "<group>";
+		};
+		276F786A245B6C8A00312927 /* bridge */ = {
+			isa = PBXGroup;
+			children = (
 				27F931562459E28800E1024C /* RealmManager.m */,
 				27F931592459E2BD00E1024C /* RealmManager.swift */,
 			);
-			name = COVIDSafePaths;
+			path = bridge;
+			sourceTree = "<group>";
+		};
+		276F786C245B6CB400312927 /* storage */ = {
+			isa = PBXGroup;
+			children = (
+				276AB156245238E400D39B58 /* RealmWrapper.swift */,
+				276AB15B245291DE00D39B58 /* Location.swift */,
+			);
+			path = storage;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
