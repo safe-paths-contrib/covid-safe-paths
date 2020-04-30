@@ -11,6 +11,10 @@ import Foundation
 @objc(RealmManager)
 class RealmManager: NSObject {
   
+  @objc static func requiresMainQueueSetup() -> Bool {
+      return false
+  }
+  
   @objc
   func getLocations(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
     RealmWrapper.shared.getLocations(resolve: resolve, reject: reject)
@@ -25,5 +29,4 @@ class RealmManager: NSObject {
   func migrateExistingLocations(_ locations: NSArray, resolve: @escaping RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
     RealmWrapper.shared.importLocations(locations: locations, source: Location.SOURCE_MIGRATION, resolve: resolve, reject: reject)
   }
-
 }
