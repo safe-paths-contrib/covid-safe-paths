@@ -59,10 +59,10 @@ class Location: Object {
   }
   
   static func fromImportLocation(dictionary: NSDictionary?, source: Int) -> Location? {
-    if dictionary == nil { return nil }
+    guard let dictionary  = dictionary else { return nil }
 
     var parsedTime: Int?
-    switch dictionary?[KEY_TIME] {
+    switch dictionary[KEY_TIME] {
     case let stringTime as String:
       if let doubleTime = Double(stringTime) {
         parsedTime = Int(TimeInterval(doubleTime) / 1000)
@@ -73,8 +73,8 @@ class Location: Object {
       break
     }
 
-    let parsedLatitude = dictionary?[KEY_LATITUDE] as? Double
-    let parsedLongitude = dictionary?[KEY_LONGITUDE] as? Double
+    let parsedLatitude = dictionary[KEY_LATITUDE] as? Double
+    let parsedLongitude = dictionary[KEY_LONGITUDE] as? Double
 
     if let time = parsedTime, let latitude = parsedLatitude, let longitude = parsedLongitude {
       if (latitude == 0.0 || longitude == 0.0) { return nil }

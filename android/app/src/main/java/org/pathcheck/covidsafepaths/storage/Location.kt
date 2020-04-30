@@ -1,5 +1,6 @@
 package org.pathcheck.covidsafepaths.storage
 
+import android.util.Log
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.marianhello.bgloc.data.BackgroundLocation
@@ -83,6 +84,7 @@ open class Location(
             source = source
         )
       } catch (exception: Exception) {
+        Log.d("Location", "Failed to import location. Received unexpected payload from bridge.")
         // possible react type-safe issues here
         null
       }
