@@ -24,12 +24,15 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   MAURBackgroundGeolocationFacade.locationTransform = ^(MAURLocation * location) {
-    [[RealmWrapper shared] saveDeviceLocationWithBackgroundLocation:location];
-    return location;
+    MAURLocation *locationToInsert = [location copy];
+    [[RealmWrapper shared] saveDeviceLocationWithBackgroundLocation:locationToInsert];
     
-    // You could return null to reject the location,
-    // or if you did something else with the location and the library should not post or save it.
+    // nil out location so geolocation library doesn't save in its internval db
+    location = nil;
+    return location;
   };
+  
+  [[RealmWrapper shared] trimLocations];
   
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge

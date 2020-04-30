@@ -46,8 +46,7 @@ class Location: Object {
   
   static func fromBackgroundLocation(backgroundLocation: MAURLocation) -> Location {
     let location = Location()
-    // Getting empty time on some callbacks. We should be able to use our own date here, as the calls should come in almost immediately
-    location.time = Int(Date().timeIntervalSince1970)
+    location.time = Int(backgroundLocation.time.timeIntervalSince1970)
     location.latitude = backgroundLocation.latitude.doubleValue
     location.longitude = backgroundLocation.longitude.doubleValue
     location.altitude.value = backgroundLocation.altitude.doubleValue
@@ -59,35 +58,35 @@ class Location: Object {
     return location;
   }
   
-//  static func fromImportLocation(dictionary: Dictionary<String, Any>?, source: Int) -> Location? {
-//    if dictionary == nil { return nil }
-//
-//    var parsedDate: Date? = nil
-//    switch dictionary?[KEY_TIME] {
-//    case let stringTime as String:
-//      if let doubleTime = Double(stringTime) {
-//        parsedDate = Date(timeIntervalSince1970: TimeInterval(doubleTime) / 1000)
-//      }
-//    case let doubleTime as Double:
-//      parsedDate = Date(timeIntervalSince1970: TimeInterval(doubleTime) / 1000)
-//    default:
-//      break
-//    }
-//
-//    let parsedLatitude = dictionary?[KEY_LATITUDE] as? Double
-//    let parsedLongitude = dictionary?[KEY_LONGITUDE] as? Double
-//
-//    if let time = parsedDate, let latitude = parsedLatitude, let longitude = parsedLongitude {
-//      if (latitude == 0.0 || longitude == 0.0) { return nil }
-//
-//      let location = Location()
-//      location.time = time
-//      location.latitude = latitude
-//      location.longitude = longitude
-//      location.source = source
-//      return location
-//    } else {
-//      return nil
-//    }
-//  }
+  static func fromImportLocation(dictionary: NSDictionary?, source: Int) -> Location? {
+    if dictionary == nil { return nil }
+
+    var parsedTime: Int?
+    switch dictionary?[KEY_TIME] {
+    case let stringTime as String:
+      if let doubleTime = Double(stringTime) {
+        parsedTime = Int(TimeInterval(doubleTime) / 1000)
+      }
+    case let doubleTime as Double:
+      parsedTime = Int(TimeInterval(doubleTime) / 1000)
+    default:
+      break
+    }
+
+    let parsedLatitude = dictionary?[KEY_LATITUDE] as? Double
+    let parsedLongitude = dictionary?[KEY_LONGITUDE] as? Double
+
+    if let time = parsedTime, let latitude = parsedLatitude, let longitude = parsedLongitude {
+      if (latitude == 0.0 || longitude == 0.0) { return nil }
+
+      let location = Location()
+      location.time = time
+      location.latitude = latitude
+      location.longitude = longitude
+      location.source = source
+      return location
+    } else {
+      return nil
+    }
+  }
 }

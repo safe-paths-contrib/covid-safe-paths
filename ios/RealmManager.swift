@@ -17,13 +17,13 @@ class RealmManager: NSObject {
   }
   
   @objc
-  func importGoogleLocations(_ locations: NSDictionary, resolve: RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
-    
+  func importGoogleLocations(_ locations: NSArray, resolve: @escaping RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
+    RealmWrapper.shared.importLocations(locations: locations, source: Location.SOURCE_GOOGLE, resolve: resolve, reject: reject)
   }
   
   @objc
-  func migrateExistingLocations(_ locations: NSDictionary, resolve: RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
-    
+  func migrateExistingLocations(_ locations: NSArray, resolve: @escaping RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) -> Void {
+    RealmWrapper.shared.importLocations(locations: locations, source: Location.SOURCE_MIGRATION, resolve: resolve, reject: reject)
   }
 
 }

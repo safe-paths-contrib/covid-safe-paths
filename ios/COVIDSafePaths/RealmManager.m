@@ -16,14 +16,14 @@ RCT_EXTERN_METHOD(
 )
 
 RCT_EXTERN_METHOD(
-                  importGoogleLocations: (NSDictionary)locations
-                  resolver: (RCTPromiseResolveBlock)resolve
+                  importGoogleLocations: (NSArray)locations
+                  resolve: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
 )
 
 RCT_EXTERN_METHOD(
-                  migrateExistingLocations: (NSDictionary)locations
-                  resolver: (RCTPromiseResolveBlock)resolve
+                  migrateExistingLocations: (NSArray)locations
+                  resolve: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
 )
 @end
