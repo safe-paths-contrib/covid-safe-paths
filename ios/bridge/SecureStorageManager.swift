@@ -1,5 +1,5 @@
 //
-//  RealmManager.swift
+//  SecureStorageManager.swift
 //  COVIDSafePaths
 //
 //  Created by Tyler Roach on 4/29/20.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-@objc(RealmManager)
-class RealmManager: NSObject {
+@objc(SecureStorageManager)
+class SecureStorageManager: NSObject {
   
   @objc static func requiresMainQueueSetup() -> Bool {
       return false

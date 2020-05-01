@@ -37,8 +37,8 @@
 		268C95DC10622C3E4F5FF2EE /* libPods-COVIDSafePaths.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4F1636C3F8D9D0DBFC31AA /* libPods-COVIDSafePaths.a */; };
 		276AB157245238E400D39B58 /* RealmWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276AB156245238E400D39B58 /* RealmWrapper.swift */; };
 		276AB15C245291DE00D39B58 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276AB15B245291DE00D39B58 /* Location.swift */; };
-		27F931572459E28800E1024C /* RealmManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F931562459E28800E1024C /* RealmManager.m */; };
-		27F9315A2459E2BD00E1024C /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F931592459E2BD00E1024C /* RealmManager.swift */; };
+		27F931572459E28800E1024C /* SecureStorageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F931562459E28800E1024C /* SecureStorageManager.m */; };
+		27F9315A2459E2BD00E1024C /* SecureStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F931592459E2BD00E1024C /* SecureStorageManager.swift */; };
 		293BC1167944469E848E4DD3 /* IBMPlexSans-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D5DFB90A472F4881A3C888C3 /* IBMPlexSans-ThinItalic.ttf */; };
 		2C883891512048299ECF6B38 /* IBMPlexSans-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E872D3374DDA4AA29E3D8511 /* IBMPlexSans-Thin.ttf */; };
 		34A5C37263064483A4CE9CD0 /* IBMPlexMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 53A0C1C57CED4660822FE560 /* IBMPlexMono-Medium.ttf */; };
@@ -122,8 +122,8 @@
 		276AB155245238E300D39B58 /* COVIDSafePaths-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "COVIDSafePaths-Bridging-Header.h"; sourceTree = "<group>"; };
 		276AB156245238E400D39B58 /* RealmWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmWrapper.swift; sourceTree = "<group>"; };
 		276AB15B245291DE00D39B58 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
-		27F931562459E28800E1024C /* RealmManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RealmManager.m; sourceTree = "<group>"; };
-		27F931592459E2BD00E1024C /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
+		27F931562459E28800E1024C /* SecureStorageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecureStorageManager.m; sourceTree = "<group>"; };
+		27F931592459E2BD00E1024C /* SecureStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureStorageManager.swift; sourceTree = "<group>"; };
 		2E9077612439A903005C98DE /* SplashScreen.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SplashScreen.xcodeproj; path = "../node_modules/react-native-splash-screen/ios/SplashScreen.xcodeproj"; sourceTree = "<group>"; };
 		3E10CA5A72D06133B886B461 /* libPods-COVIDSafePaths-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-COVIDSafePaths-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		41038D978FEE48AD9709F232 /* IBMPlexSans-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "IBMPlexSans-Light.ttf"; path = "../app/assets/fonts/IBMPlexSans-Light.ttf"; sourceTree = "<group>"; };
@@ -312,8 +312,8 @@
 		276F786A245B6C8A00312927 /* bridge */ = {
 			isa = PBXGroup;
 			children = (
-				27F931562459E28800E1024C /* RealmManager.m */,
-				27F931592459E2BD00E1024C /* RealmManager.swift */,
+				27F931562459E28800E1024C /* SecureStorageManager.m */,
+				27F931592459E2BD00E1024C /* SecureStorageManager.swift */,
 			);
 			path = bridge;
 			sourceTree = "<group>";
@@ -651,11 +651,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0835F8922441054A00E95AE3 /* RNBackgroundFetch+AppDelegate.m in Sources */,
-				27F931572459E28800E1024C /* RealmManager.m in Sources */,
+				27F931572459E28800E1024C /* SecureStorageManager.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				276AB15C245291DE00D39B58 /* Location.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				27F9315A2459E2BD00E1024C /* RealmManager.swift in Sources */,
+				27F9315A2459E2BD00E1024C /* SecureStorageManager.swift in Sources */,
 				276AB157245238E400D39B58 /* RealmWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

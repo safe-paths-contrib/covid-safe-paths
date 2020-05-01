@@ -1,5 +1,5 @@
 //
-//  RealmManager.m
+//  SecureStorageManager.m
 //  COVIDSafePaths
 //
 //  Created by Tyler Roach on 4/29/20.
@@ -8,7 +8,7 @@
 
 #import "React/RCTBridgeModule.h"
 
-@interface RCT_EXTERN_MODULE(RealmManager, NSObject)
+@interface RCT_EXTERN_MODULE(SecureStorageManager, NSObject)
 
 RCT_EXTERN_METHOD(
                   getLocations: (RCTPromiseResolveBlock)resolve
