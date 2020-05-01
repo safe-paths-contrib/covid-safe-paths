@@ -208,11 +208,11 @@ class LocationTracking extends Component {
 
     GetStoreData(LOCATION_DATA, false).then(locations => {
       if (Array.isArray(locations) && locations.length > 0) {
-        NativeModules.RealmManager.migrateExistingLocations(locations).then(
-          () => {
-            RemoveStoreData(LOCATION_DATA);
-          },
-        );
+        NativeModules.SecureStorageManager.migrateExistingLocations(
+          locations,
+        ).then(() => {
+          RemoveStoreData(LOCATION_DATA);
+        });
       }
     });
   }

@@ -23,7 +23,7 @@ export class LocationData {
   }
 
   async getLocationData() {
-    return NativeModules.RealmManager.getLocations();
+    return NativeModules.SecureStorageManager.getLocations();
   }
 
   /**

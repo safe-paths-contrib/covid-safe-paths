@@ -111,7 +111,9 @@ export async function importTakeoutData(filePath) {
         });
 
         let googleLocations = extractLocations(JSON.parse(contents));
-        await NativeModules.RealmManager.importGoogleLocations(googleLocations);
+        await NativeModules.SecureStorageManager.importGoogleLocations(
+          googleLocations,
+        );
         console.log('[INFO] Imported file:', filepath);
         parsedFilesCount++;
       }

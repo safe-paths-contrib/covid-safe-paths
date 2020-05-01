@@ -48,7 +48,7 @@ export const ExportScreen = ({ navigation }) => {
 
   async function onShare() {
     try {
-      let locationData = await NativeModules.RealmManager.getLocations();
+      let locationData = await NativeModules.SecureStorageManager.getLocations();
       let nowUTC = new Date().toISOString();
       let unixtimeUTC = Date.parse(nowUTC);
 

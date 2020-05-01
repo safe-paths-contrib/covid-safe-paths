@@ -11,7 +11,7 @@ describe('LocationData class', () => {
         },
         NativeModules: {
           ...ReactNative.NativeModules,
-          RealmManager: {
+          SecureStorageManager: {
             getLocations: jest
               .fn()
               .mockReturnValue(Promise.resolve([1, 2, 3, 4, 5])),

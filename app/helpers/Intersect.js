@@ -288,7 +288,7 @@ async function asyncCheckIntersect() {
   let name_news = [];
 
   // get the saved set of locations for the user, already sorted
-  let locationArray = await NativeModules.RealmManager.getLocations();
+  let locationArray = await NativeModules.SecureStorageManager.getLocations();
 
   // get the health authorities
   let authority_list = await GetStoreData(AUTHORITY_SOURCE_SETTINGS);

@@ -9,10 +9,10 @@ import org.pathcheck.covidsafepaths.storage.Location.Companion.SOURCE_GOOGLE
 import org.pathcheck.covidsafepaths.storage.Location.Companion.SOURCE_MIGRATION
 import org.pathcheck.covidsafepaths.storage.RealmWrapper
 
-class RealmManager(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class SecureStorageManager(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
   override fun getName(): String {
-    return "RealmManager"
+    return "SecureStorageManager"
   }
 
   @ReactMethod

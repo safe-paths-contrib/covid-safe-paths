@@ -76,7 +76,7 @@ describe('importTakeoutData', () => {
         },
         NativeModules: {
           ...ReactNative.NativeModules,
-          RealmManager: {
+          SecureStorageManager: {
             importGoogleLocations: importGoogleLocations,
           },
         },

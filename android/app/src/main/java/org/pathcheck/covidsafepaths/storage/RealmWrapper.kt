@@ -37,9 +37,7 @@ object RealmWrapper {
 
   init {
     Thread(Runnable {
-      Log.d(TAG, "${System.currentTimeMillis()}")
       val encryptionKey = getEncryptionKey()
-      Log.d(TAG, "${System.currentTimeMillis()}")
 
       val realmConfig = RealmConfiguration.Builder()
           .name("safepaths.realm")
