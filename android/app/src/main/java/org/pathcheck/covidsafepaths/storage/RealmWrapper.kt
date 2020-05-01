@@ -63,7 +63,7 @@ object RealmWrapper {
 
       val realm = Realm.getDefaultInstance()
 
-      realm.executeTransactionAsync({
+      realm.executeTransaction {
         val realmResult = it.where<Location>()
             .equalTo(KEY_SOURCE, SOURCE_DEVICE)
             .sort(Location.KEY_TIME, DESCENDING)
@@ -77,8 +77,10 @@ object RealmWrapper {
         } else {
           Log.d(TAG, "Ignoring save. Minimum time threshold not exceeded")
         }
-      }, { realm.close() }, { realm.close() })
-    })
+      }
+
+      realm.close()
+    }).start()
   }
 
   fun importLocations(locations: ReadableArray, source: Int, promise: Promise) {
@@ -92,30 +94,24 @@ object RealmWrapper {
       val realm = Realm.getDefaultInstance()
 
       val locationsToInsert = mutableListOf<Location>()
-      realm.executeTransactionAsync({ bgRealm ->
+      realm.executeTransaction {
         for (i in 0 until locations.size()) {
           try {
             val map = locations.getMap(i)
-
-            Location.fromImportLocation(map, source)?.let {
-              if (it.time >= getCutoffTimestamp(DAYS_TO_KEEP)) {
-                locationsToInsert.add(it)
+            Location.fromImportLocation(map, source)?.let { location ->
+              if (location.time >= getCutoffTimestamp(DAYS_TO_KEEP)) {
+                locationsToInsert.add(location)
               }
             }
           } catch (exception: Exception) {
             // possible react type-safe issues here
           }
         }
-        bgRealm.insertOrUpdate(locationsToInsert)
-      }, {
-        realm.close()
-        promise.resolve(true)
-        Log.d(TAG, "Imported ${locationsToInsert.size} locations")
-      }, {
-        realm.close()
-        promise.resolve(false)
-        Log.d(TAG, "Failed to import ${locationsToInsert.size} locations")
-      })
+        it.insertOrUpdate(locationsToInsert)
+      }
+
+      realm.close()
+      promise.resolve(true)
     }).start()
   }
 
