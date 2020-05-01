@@ -166,14 +166,12 @@ object RealmWrapper {
     val existingKeyString = vault.getString(KEY_REALM_ENCRYPTION_KEY, null)
 
     return if (existingKeyString != null) {
-      Log.d(TAG, "Getting existing Realm Encryption Key: $existingKeyString")
       Base64.decode(existingKeyString, Base64.DEFAULT)
     } else {
       val newKey = ByteArray(64)
       SecureRandom().nextBytes(newKey)
       val newKeyString = Base64.encodeToString(newKey, Base64.DEFAULT)
       vault.edit().putString(KEY_REALM_ENCRYPTION_KEY, newKeyString).apply()
-      Log.d(TAG, "Generated new Realm Encryption Key: $newKeyString")
       newKey
     }
   }
