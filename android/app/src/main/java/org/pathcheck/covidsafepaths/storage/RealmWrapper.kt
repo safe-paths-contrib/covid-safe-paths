@@ -1,6 +1,9 @@
 package org.pathcheck.covidsafepaths.storage
 
+import android.util.Base64
 import android.util.Log
+import com.bottlerocketstudios.vault.SharedPreferenceVault
+import com.bottlerocketstudios.vault.SharedPreferenceVaultFactory
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.WritableNativeArray
@@ -10,81 +13,121 @@ import io.realm.RealmConfiguration
 import io.realm.Sort.ASCENDING
 import io.realm.Sort.DESCENDING
 import io.realm.kotlin.where
+import org.pathcheck.covidsafepaths.MainApplication
 import org.pathcheck.covidsafepaths.storage.Location.Companion.KEY_SOURCE
 import org.pathcheck.covidsafepaths.storage.Location.Companion.SOURCE_DEVICE
 import org.pathcheck.covidsafepaths.util.getCutoffTimestamp
-import java.lang.Exception
+import java.security.SecureRandom
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit.SECONDS
 
 object RealmWrapper {
   private const val TAG = "RealmWrapper"
-  private const val minimumTimeInterval = 60000 * 4
-  private const val daysToKeep = 14
+  private const val MINIMUM_TIME_INTERVAL = 60000 * 4
+  private const val DAYS_TO_KEEP = 14
+
+  private const val MANUALLY_KEYED_PREF_FILE_NAME = "safepaths_enc_prefs"
+  private const val MANUALLY_KEYED_KEY_FILE_NAME = "safepaths_enc_key"
+  private const val MANUALLY_KEYED_KEY_ALIAS = "safepaths"
+  private const val MANUALLY_KEYED_KEY_INDEX = 2
+  private const val MANUALLY_KEYED_PRESHARED_SECRET = "" // This will not be used as we do not support < 18
+  private const val KEY_REALM_ENCRYPTION_KEY = "KEY_REALM_ENCRYPTION_KEY"
+
+  private var readyCountdown = CountDownLatch(1)
 
   init {
-    val realmConfig = RealmConfiguration.Builder()
-        .name("safepaths.realm")
-        .addModule(SafePathsRealmModule())
-        .build()
+    Thread(Runnable {
+      Log.d(TAG, "${System.currentTimeMillis()}")
+      val encryptionKey = getEncryptionKey()
+      Log.d(TAG, "${System.currentTimeMillis()}")
 
-    Realm.setDefaultConfiguration(realmConfig)
+      val realmConfig = RealmConfiguration.Builder()
+          .name("safepaths.realm")
+          .encryptionKey(encryptionKey)
+          .addModule(SafePathsRealmModule())
+          .build()
+
+      Realm.setDefaultConfiguration(realmConfig)
+      readyCountdown.countDown()
+
+      // With each new app init, trim locations to DAYS_TO_KEEP
+      trimLocations()
+
+    }).start()
   }
 
   fun saveDeviceLocation(backgroundLocation: BackgroundLocation) {
-    val realm = Realm.getDefaultInstance()
+    Thread(Runnable {
+      val ready = readyCountdown.await(10, SECONDS)
+      if (!ready) return@Runnable
 
-    realm.executeTransactionAsync({
-      val realmResult = it.where<Location>()
-          .equalTo(KEY_SOURCE, SOURCE_DEVICE)
-          .sort(Location.KEY_TIME, DESCENDING)
-          .limit(1)
-          .findAll()
+      val realm = Realm.getDefaultInstance()
 
-      val previousTime = realmResult.getOrNull(0)?.time ?: 0
-      if (backgroundLocation.time - previousTime > minimumTimeInterval) {
-        Log.d(TAG, "Inserting New Location")
-        it.insert(Location.fromBackgroundLocation(backgroundLocation))
-      } else {
-        Log.d(TAG, "Ignoring save. Minimum time threshold not exceeded")
-      }
-    }, { realm.close() }, { realm.close() })
-  }
+      realm.executeTransactionAsync({
+        val realmResult = it.where<Location>()
+            .equalTo(KEY_SOURCE, SOURCE_DEVICE)
+            .sort(Location.KEY_TIME, DESCENDING)
+            .limit(1)
+            .findAll()
 
-  fun importLocations(locations: ReadableArray, source: Int, promise: Promise) {
-    val realm = Realm.getDefaultInstance()
-
-    val locationsToInsert = mutableListOf<Location>()
-    realm.executeTransactionAsync({ bgRealm ->
-      for (i in 0 until locations.size()) {
-        try {
-          val map = locations.getMap(i)
-
-          Location.fromImportLocation(map, source)?.let {
-            if (it.time >= getCutoffTimestamp(daysToKeep)) {
-              locationsToInsert.add(it)
-            }
-          }
-        } catch (exception: Exception) {
-          // possible react type-safe issues here
+        val previousTime = realmResult.getOrNull(0)?.time ?: 0
+        if (backgroundLocation.time - previousTime > MINIMUM_TIME_INTERVAL) {
+          Log.d(TAG, "Inserting New Location")
+          it.insert(Location.fromBackgroundLocation(backgroundLocation))
+        } else {
+          Log.d(TAG, "Ignoring save. Minimum time threshold not exceeded")
         }
-      }
-      bgRealm.insertOrUpdate(locationsToInsert)
-    }, {
-      realm.close()
-      promise.resolve(true)
-      Log.d(TAG, "Imported ${locationsToInsert.size} locations")
-    }, {
-      realm.close()
-      promise.resolve(false)
-      Log.d(TAG, "Failed to import ${locationsToInsert.size} locations")
+      }, { realm.close() }, { realm.close() })
     })
   }
 
-  fun trimLocations() {
+  fun importLocations(locations: ReadableArray, source: Int, promise: Promise) {
     Thread(Runnable {
+      val ready = readyCountdown.await(10, SECONDS)
+      if (!ready) {
+        promise.reject(java.lang.Exception("Failed to get Realm instance with encryption"))
+        return@Runnable
+      }
+
+      val realm = Realm.getDefaultInstance()
+
+      val locationsToInsert = mutableListOf<Location>()
+      realm.executeTransactionAsync({ bgRealm ->
+        for (i in 0 until locations.size()) {
+          try {
+            val map = locations.getMap(i)
+
+            Location.fromImportLocation(map, source)?.let {
+              if (it.time >= getCutoffTimestamp(DAYS_TO_KEEP)) {
+                locationsToInsert.add(it)
+              }
+            }
+          } catch (exception: Exception) {
+            // possible react type-safe issues here
+          }
+        }
+        bgRealm.insertOrUpdate(locationsToInsert)
+      }, {
+        realm.close()
+        promise.resolve(true)
+        Log.d(TAG, "Imported ${locationsToInsert.size} locations")
+      }, {
+        realm.close()
+        promise.resolve(false)
+        Log.d(TAG, "Failed to import ${locationsToInsert.size} locations")
+      })
+    }).start()
+  }
+
+  private fun trimLocations() {
+    Thread(Runnable {
+      val ready = readyCountdown.await(10, SECONDS)
+      if (!ready) return@Runnable
+
       val realm = Realm.getDefaultInstance()
 
       realm.where<Location>()
-          .lessThan(Location.KEY_TIME, getCutoffTimestamp(daysToKeep))
+          .lessThan(Location.KEY_TIME, getCutoffTimestamp(DAYS_TO_KEEP))
           .findAll()
           .deleteAllFromRealm()
 
@@ -94,10 +137,16 @@ object RealmWrapper {
 
   fun getLocations(promise: Promise) {
     Thread(Runnable {
+      val ready = readyCountdown.await(10, SECONDS)
+      if (!ready) {
+        promise.reject(java.lang.Exception("Failed to get Realm instance with encryption"))
+        return@Runnable
+      }
+
       val realm = Realm.getDefaultInstance()
 
       val deviceResults = realm.where<Location>()
-          .greaterThanOrEqualTo(Location.KEY_TIME, getCutoffTimestamp(daysToKeep))
+          .greaterThanOrEqualTo(Location.KEY_TIME, getCutoffTimestamp(DAYS_TO_KEEP))
           .sort(Location.KEY_TIME, ASCENDING)
           .findAll()
 
@@ -109,5 +158,27 @@ object RealmWrapper {
 
       realm.close()
     }).start()
+  }
+
+  private fun getEncryptionKey(): ByteArray {
+    val vault: SharedPreferenceVault =
+      SharedPreferenceVaultFactory.getAppKeyedCompatAes256Vault(
+          MainApplication.getContext(), MANUALLY_KEYED_PREF_FILE_NAME, MANUALLY_KEYED_KEY_FILE_NAME,
+          MANUALLY_KEYED_KEY_ALIAS, MANUALLY_KEYED_KEY_INDEX, MANUALLY_KEYED_PRESHARED_SECRET
+      )
+
+    val existingKeyString = vault.getString(KEY_REALM_ENCRYPTION_KEY, null)
+
+    return if (existingKeyString != null) {
+      Log.d(TAG, "Getting existing Realm Encryption Key: $existingKeyString")
+      Base64.decode(existingKeyString, Base64.DEFAULT)
+    } else {
+      val newKey = ByteArray(64)
+      SecureRandom().nextBytes(newKey)
+      val newKeyString = Base64.encodeToString(newKey, Base64.DEFAULT)
+      vault.edit().putString(KEY_REALM_ENCRYPTION_KEY, newKeyString).apply()
+      Log.d(TAG, "Generated new Realm Encryption Key: $newKeyString")
+      newKey
+    }
   }
 }

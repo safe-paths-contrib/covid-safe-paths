@@ -16,6 +16,8 @@ import org.pathcheck.covidsafepaths.storage.RealmWrapper;
 
 public class MainApplication extends Application implements ReactApplication {
 
+  private static Context context;
+
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
@@ -48,11 +50,13 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    MainApplication.context = getApplicationContext();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this); // Remove this line if you don't want Flipper enabled
     Realm.init(this);
     initializeGeolocationTransformer();
-    RealmWrapper.INSTANCE.trimLocations();
+    // Ignore assignment. Creating to begin heavy encryption work
+    RealmWrapper wrapper = RealmWrapper.INSTANCE;
   }
 
   /**
@@ -90,5 +94,9 @@ public class MainApplication extends Application implements ReactApplication {
       // Always return null. We never want to store data in the libraries SQLite DB
       return null;
     });
+  }
+
+  public static Context getContext() {
+    return MainApplication.context;
   }
 }
